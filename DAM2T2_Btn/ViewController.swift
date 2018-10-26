@@ -38,8 +38,8 @@ class ViewController: UIViewController {
     }
     // GAME OVER
     @IBOutlet weak var lbl_gameOver: UILabel!
-    var gameOverWin: String = "GJ YOU CAN COUNT :D"
-    var gameOverLose: String = "GAME OVAH"
+    let GAME_OVER_WIN_TXT: String = "YOU WIN :D"
+    let GAME_OVER_LOSE_TXT: String = "GAME OVAH"
     
     @IBAction func btnClick(_ sender: UIButton) {
         // Check if button clicked has same value as first buttonValues value
@@ -51,7 +51,7 @@ class ViewController: UIViewController {
             sender.isHidden = true
             buttonValues.remove(at: 0)
             
-            // If there's no more buttons left, show restart button
+            // If there's no more buttons left, game won
             if buttonValues.count == 0 {
                 win()
             }
@@ -60,6 +60,11 @@ class ViewController: UIViewController {
     
     // Hide restart button and show every other button
     @IBAction func restart(_ sender: UIButton) {
+        // If game was lost reset score
+        if lbl_gameOver.text == GAME_OVER_LOSE_TXT {
+            score = 0
+        }
+        
         initGame()
         sender.isHidden = true
     }
@@ -69,6 +74,7 @@ class ViewController: UIViewController {
         
         // Initialize buttons array
         buttons = [btn_01, btn_02, btn_03, btn_04]
+        
         initGame()
     }
     
@@ -90,6 +96,7 @@ class ViewController: UIViewController {
         startTimer()
     }
     
+    // Restart + show timer
     func startTimer() {
         currTime = maxTime
         lbl_timer.isHidden = false
@@ -100,26 +107,15 @@ class ViewController: UIViewController {
         if currTime > 0 {
             currTime -= 1
         } else {
-            gameOver()
+            lose()
         }
     }
     
     func win() {
-        // Reset + hide timer
-        timer.invalidate()
-        lbl_timer.isHidden = true
-        
-        // Show game over msg + restart button
-        lbl_gameOver.text = gameOverWin
-        lbl_gameOver.isHidden = false
-        btn_goAgane.isHidden = false
+        gameOver(gameOverTxt: GAME_OVER_WIN_TXT)
     }
     
-    func gameOver() {
-        // Reset + hide timer
-        timer.invalidate()
-        lbl_timer.isHidden = true
-        
+    func lose() {
         // Hide all buttons
         for button in buttons {
             button.isHidden = true
@@ -127,8 +123,16 @@ class ViewController: UIViewController {
         // Empty button values array
         buttonValues.removeAll()
         
+        gameOver(gameOverTxt: GAME_OVER_LOSE_TXT)
+    }
+    
+    func gameOver(gameOverTxt: String) {
+        // Invalidate + hide timer
+        timer.invalidate()
+        lbl_timer.isHidden = true
+        
         // Show game over msg + restart button
-        lbl_gameOver.text = gameOverLose
+        lbl_gameOver.text = gameOverTxt
         lbl_gameOver.isHidden = false
         btn_goAgane.isHidden = false
     }
